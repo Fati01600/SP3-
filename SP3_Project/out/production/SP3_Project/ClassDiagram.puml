@@ -1,0 +1,102 @@
+@startuml
+
+class Main {
+    + static void main(String[] args) : void
+}
+
+class User {
+    - String userName
+    - String password
+    - List<Media> watched
+    - List<Media> saved
+    + User(String userName, String password)
+    + userWatched(Media m) : void
+    + userSaved(Media m) : void
+    + getUserName() : String
+    + getPassword() : String
+    + getWatched() : List<Media>
+    + getSaved() : List<Media>
+}
+
+class Menu {
+    - List<Media> allMedia
+    - TextUI ui
+    + displayStartMenu() : void
+    + displayMainMenu() : void
+    + displayWatchedList() : void
+    + displaySavedList() : void
+    + searchForMedia() : void
+    + logOut() : void
+}
+
+class Media {
+    - String title
+    - ArrayList<String> genre
+    - double rating
+    - int publicationYear
+    + Media(String title, int publicationYear, ArrayList<String> genre, double rating)
+    + getTitle() : String
+    + getGenre() : ArrayList<String>
+    + getPublicationYear() : int
+    + getRating() : double
+    + toString() : String
+}
+
+class Movie extends Media {
+    + Movie(String title, int publicationYear, ArrayList<String> genre, double rating)
+}
+
+class Serie extends Media {
+    - static Map<Integer, Integer> integersSorted
+    + Serie(String title, int publicationYear, ArrayList<String> genre, double rating, Map<Integer, Integer> integersSorted)
+    + getTitle() : String
+    + getSeason(Map<Integer, Integer> integers) : Map<Integer, Integer>
+    + toString() : String
+}
+
+class StreamingService {
+    - static User currentUser
+    - TextUI ui
+    - FileIO io
+    - static ArrayList<Media> media
+    - ArrayList<User> users
+    - Menu menu
+    + setup() : void
+    + runSignInDialog() : void
+    + runSignUpDialog() : void
+    + registerUser(String userName, String password) : void
+    + createMedia(String[] data, String type) : ArrayList<Media>
+}
+
+class TextUI {
+    - Scanner scan
+    + getInput(String msg) : String
+    + displayMessage(String msg) : void
+}
+
+class FileIO implements Data {
+    + readUserData(String path) : ArrayList<User>
+    + saveUserData(List<User> users) : void
+    + readMediaData(String path, int length) : String[]
+}
+
+interface Data {
+    + readUserData(String path) : ArrayList<User>
+    + saveUserData(List<User> users) : void
+    + readMediaData(String path, int length) : String[]
+}
+
+Main -- StreamingService
+Menu "1" -- "1" StreamingService
+Menu -- "1" TextUI
+StreamingService -- "1" TextUI
+StreamingService -- "1" FileIO
+StreamingService -- "*" Media
+StreamingService -- "*" User
+User "1" -- "*" Media : watched
+User "1" -- "*" Media : saved
+Media <|-- Movie
+Media <|-- Serie
+Data <|.. FileIO
+
+@enduml
